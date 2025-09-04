@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025 Web Bug Hunting Checklist - Yatun Hassan Rafi (yhrsec)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --info: #9b59b6;
+            --tool-bg: #fff3cd;
+            --ai-bg: #e8f4fc;
+            --cloud-bg: #e8f6f3;
+            --iot-bg: #fef9e7;
+            --access-bg: #f9ebea;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, #1a2530 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #3498db, #2ecc71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .developer {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+        
+        .year-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background: var(--light);
+            border-bottom: 1px solid #ddd;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-danger {
+            background: var(--accent);
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: #27ae60;
+        }
+        
+        .btn-info {
+            background: var(--info);
+        }
+        
+        .btn-info:hover {
+            background: #8e44ad;
+        }
+        
+        .btn-tool {
+            background: var(--warning);
+            font-size: 0.85rem;
+            padding: 6px 12px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            padding: 15px;
+            background: var(--light);
+            font-weight: bold;
+            font-size: 1.1rem;
+            flex-wrap: wrap;
+        }
+        
+        .stats span {
+            margin: 0 20px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #ddd;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--secondary));
+            border-radius: 5px;
+            transition: width 0.5s;
+        }
+        
+        .checklist-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            padding: 30px;
+        }
+        
+        .category {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+        
+        .category:hover {
+            transform: translateY(-5px);
+        }
+        
+        .category-ai {
+            border-top: 5px solid #9b59b6;
+        }
+        
+        .category-cloud {
+            border-top: 5px solid #1abc9c;
+        }
+        
+        .category-iot {
+            border-top: 5px solid #f39c12;
+        }
+        
+        .category-new {
+            border-top: 5px solid #e74c3c;
+        }
+        
+        .category-access {
+            border-top: 5px solid #c0392b;
+        }
+        
+        .category h2 {
+            color: var(--primary);
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--secondary);
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .check-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            position: relative;
+        }
+        
+        .check-item:last-child {
+            border-bottom: none;
+        }
+        
+        .check-item input[type="checkbox"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        
+        .check-item label {
+            flex: 1;
+            cursor: pointer;
+            font-size: 1.05rem;
+            line-height: 1.4;
+        }
+        
+        .check-item input[type="checkbox"]:checked + label {
+            text-decoration: line-through;
+            color: #888;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 10px;
+            flex-shrink: 0;
+        }
+        
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 250px;
+            background-color: var(--tool-bg);
+            color: var(--dark);
+            text-align: center;
+            border-radius: 8px;
+            padding: 12px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -125px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            font-size: 0.9rem;
+            border: 1px solid var(--warning);
+        }
+        
+        .tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--warning) transparent transparent transparent;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .tools-btn {
+            background: var(--warning);
+            color: var(--dark);
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .tools-btn:hover {
+            background: #e67e22;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 25px;
+            background: var(--dark);
+            color: white;
+            font-size: 1rem;
+        }
+        
+        @media (max-width: 1100px) {
+            .checklist-container {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 10px;
+                align-items: center;
+            }
+            
+            .stats span {
+                margin: 5px 0;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .developer {
+                font-size: 1.2rem;
+            }
+            
+            .checklist-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .new-badge {
+            background: var(--accent);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
+            vertical-align: super;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>2025 Web Bug Hunting Checklist</h1>
+                <div class="developer">Yatun Hassan Rafi (yhrsec)</div>
+                <p class="subtitle">Advanced security testing checklist for modern web applications</p>
+                <div class="year-badge">2025 Edition</div>
+            </div>
+        </header>
+        
+        <div class="controls">
+            <div>
+                <button class="btn" id="checkAll"><i class="fas fa-check-square"></i> Check All</button>
+                <button class="btn btn-danger" id="uncheckAll"><i class="fas fa-times-circle"></i> Uncheck All</button>
+            </div>
+            <div>
+                <button class="btn btn-success" id="saveBtn"><i class="fas fa-save"></i> Save Progress</button>
+                <button class="btn btn-info" id="exportBtn"><i class="fas fa-file-export"></i> Export</button>
+                <button class="btn" id="resetBtn"><i class="fas fa-redo"></i> Reset</button>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <span><i class="fas fa-tasks"></i> <span id="totalItems">Total: 0</span></span>
+            <span><i class="fas fa-check-circle"></i> <span id="completedItems">Completed: 0</span></span>
+            <span><i class="fas fa-chart-line"></i> <span id="completionPercentage">0%</span></span>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+        </div>
+        
+        <div class="checklist-container">
+            <div class="category">
+                <h2><i class="fas fa-binoculars"></i> Reconnaissance</h2>
+                <div class="check-item">
+                    <input type="checkbox" id="item1">
+                    <label for="item1">Subdomain enumeration</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">Sublist3r, Amass, Subfinder, Assetfinder, Findomain</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item2">
+                    <label for="item2">DNS reconnaissance (AXFR, zone walking)</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">Dig, Nslookup, DNSrecon, DNSenum, Fierce</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item3">
+                    <label for="item3">Technology stack identification</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">Wappalyzer, BuiltWith, WhatWeb, Netcat, Nikto</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item4">
+                    <label for="item4">SSL/TLS certificate analysis</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">SSLyze, TestSSL.sh, SSLScan, OpenSSL, Nmap</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item5">
+                    <label for="item5">GitHub reconnaissance for exposed secrets</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">GitHacker, TruffleHog, GitRob, Repo-supervisor, Gitleaks</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="category">
+                <h2><i class="fas fa-fingerprint"></i> Authentication & Session</h2>
+                <div class="check-item">
+                    <input type="checkbox" id="item6">
+                    <label for="item6">Authentication bypass testing</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">Burp Suite, OWASP ZAP, Cookie Editor, Browser DevTools</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item7">
+                    <label for="item7">Brute force protection assessment</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">Hydra, Medusa, Burp Intruder, Patator, Wfuzz</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item8">
+                    <label for="item8">Session management flaws</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">Burp Suite, OWASP ZAP, JWT_tool, SessionHijacking</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item9">
+                    <label for="item9">Password policy weaknesses</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">Custom scripts, Burp Suite, CeWL, Crunch, Hashcat</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item10">
+                    <label for="item10">Multi-factor authentication bypass</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">Burp Suite, OWASP ZAP, ModHeader, Postman, Browser Plugins</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="category">
+                <h2><i class="fas fa-biohazard"></i> Input Validation</h2>
+                <div class="check-item">
+                    <input type="checkbox" id="item11">
+                    <label for="item11">SQL injection (SQLi)</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">SQLmap, NoSQLMap, jSQL, BBQSQL, Havij, Burp Suite</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item12">
+                    <label for="item12">Cross-Site Scripting (XSS)</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">XSSer, XSStrike, BeEF, Burp Suite, OWASP ZAP, Dalfox</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item13">
+                    <label for="item13">Command injection</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">Commix, Burp Suite, OWASP ZAP, Custom scripts</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item14">
+                    <label for="item14">XML External Entity (XXE) injection</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">XXEinjector, Burp Suite, OWASP ZAP, Postman</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item15">
+                    <label for="item15">Server-Side Request Forgery (SSRF)</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">SSRFmap, Burp Suite, OWASP ZAP, Postman, Gopherus</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- New Access Control category with IDOR and CORS -->
+            <div class="category category-access">
+                <h2><i class="fas fa-shield-alt"></i> Access Control</h2>
+                <div class="check-item">
+                    <input type="checkbox" id="item16">
+                    <label for="item16">Insecure Direct Object References (IDOR)</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">Burp Suite, Autorize, AuthMatrix, Custom scripts</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item17">
+                    <label for="item17">Cross-Origin Resource Sharing (CORS) misconfigurations</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">Burp Suite, OWASP ZAP, Corsy, Postman, Browser DevTools</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item18">
+                    <label for="item18">Privilege escalation testing</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">Burp Suite, Postman, Custom scripts, AuthMatrix</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item19">
+                    <label for="item19">Path traversal vulnerabilities</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">DotDotPwn, Burp Suite, OWASP ZAP, Custom scripts</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item20">
+                    <label for="item20">JWT token manipulation</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">jwt_tool, Burp Suite, JOSEPH, jwt-heartbreaker</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Additional Vulnerabilities Section -->
+            <div class="category">
+                <h2><i class="fas fa-bug"></i> Additional Vulnerabilities</h2>
+                <div class="check-item">
+                    <input type="checkbox" id="item46">
+                    <label for="item46">Cross-Site Request Forgery (CSRF)</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">Burp Suite, OWASP ZAP, CSRFTester, Custom scripts</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item47">
+                    <label for="item47">Security Misconfigurations</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">Nessus, OpenVAS, Nikto, Burp Suite, OWASP ZAP</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item48">
+                    <label for="item48">Insecure Deserialization</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">ysoserial, Burp Suite, Java Deserialization Scanner</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item49">
+                    <label for="item49">Server-Side Template Injection (SSTI)</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">tplmap, Burp Suite, Custom payloads</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item50">
+                    <label for="item50">HTTP Request Smuggling</label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">Burp Suite, http-request-smuggler, Custom scripts</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="category category-new">
+                <h2><i class="fas fa-rocket"></i> 2025 Emerging Threats</h2>
+                <div class="check-item">
+                    <input type="checkbox" id="item31">
+                    <label for="item31">AI Model Poisoning <span class="new-badge">NEW</span></label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">Adversarial Robustness Toolbox, Counterfit, MLFlow, TensorTrust</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item32">
+                    <label for="item32">Web3 Smart Contract Vulnerabilities <span class="new-badge">NEW</span></label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">Mythril, Slither, Securify, Oyente, SmartCheck</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item33">
+                    <label for="item33">API Deep Object Injection <span class="new-badge">NEW</span></label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">Burp Suite, APIsec, Akto, Escape, Bright</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item34">
+                    <label for="item34">Quantum Computing Preparedness <span class="new-badge">NEW</span></label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">OpenQuantumSafe, LibOQS, QKD Simulators, CryptoSense</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item35">
+                    <label for="item35">5G Network Slicing Attacks <span class="new-badge">NEW</span></label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">Wireshark, 5GReasoner, Sim5G, srsRAN, Open5GS</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="category category-ai">
+                <h2><i class="fas fa-robot"></i> AI/ML Security</h2>
+                <div class="check-item">
+                    <input type="checkbox" id="item36">
+                    <label for="item36">Model Inversion Attacks <span class="new-badge">NEW</span></label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">ART, PrivacyRaven, ModelStealing, AIExplainer</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item37">
+                    <label for="item37">Training Data Extraction <span class="new-badge">NEW</span></label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">ExtractionTester, MembershipInference, MLPrivacyMeter</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item38">
+                    <label for="item38">Adversarial Examples <span class="new-badge">NEW</span></label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">CleverHans, Foolbox, AdversarialLib, TextFooler</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item39">
+                    <label for="item39">AI Supply Chain Attacks <span class="new-badge">NEW</span></label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">ModelScan, AISecScan, DependencyCheck, Snyk</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item40">
+                    <label for="item40">Prompt Injection Attacks <span class="new-badge">NEW</span></label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">PromptInjectionTool, GPTScan, LLMSecurity, AIPentest</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="category category-cloud">
+                <h2><i class="fas fa-cloud"></i> Cloud & Container Security</h2>
+                <div class="check-item">
+                    <input type="checkbox" id="item41">
+                    <label for="item41">Container Escape Vulnerabilities <span class="new-badge">NEW</span></label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">gVisor, Falco, Tracee, Sysdig, Checkov</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item42">
+                    <label for="item42">Serverless Function Attacks <span class="new-badge">NEW</span></label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">SLS-ATTACK, FunctionShield, LambdaGuard, AWSPWN</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item43">
+                    <label for="item43">Cloud Metadata Service Exploitation <span class="new-badge">NEW</span></label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">Metabadger, CloudSploit, ScoutSuite, Pacu</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item44">
+                    <label for="item44">Kubernetes Misconfigurations <span class="new-badge">NEW</span></label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">kube-hunter, kubeaudit, kubesec, Starboard, Popeye</span>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="item45">
+                    <label for="item45">Cloud Storage Bucket Hijacking <span class="new-badge">NEW</span></label>
+                    <div class="tooltip">
+                        <button class="tools-btn"><i class="fas fa-tools"></i> Tools</button>
+                        <span class="tooltip-text">CloudMapper, S3Scanner, BucketStream, AWSBucketDump</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Always obtain proper authorization before testing. This checklist is for educational purposes only.</p>
+            <p>© 2025 Web Bug Hunting Checklist - Created by Yatun Hassan Rafi (yhrsec)</p>
+        </footer>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        const totalItems = document.getElementById('totalItems');
+        const completedItems = document.getElementById('completedItems');
+        const completionPercentage = document.getElementById('completionPercentage');
+        const progressBar = document.getElementById('progressBar');
+        const checkAllBtn = document.getElementById('checkAll');
+        const uncheckAllBtn = document.getElementById('uncheckAll');
+        const saveBtn = document.getElementById('saveBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        
+        // Set total items count
+        totalItems.textContent = `Total: ${checkboxes.length}`;
+        
+        // Load saved progress from localStorage
+        loadProgress();
+        
+        // Update stats
+        updateStats();
+        
+        // Add event listeners to all checkboxes
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                updateStats();
+                saveProgress();
+            });
+        });
+        
+        // Check all button
+        checkAllBtn.addEventListener('click', function() {
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = true;
+            });
+            updateStats();
+            saveProgress();
+        });
+        
+        // Uncheck all button
+        uncheckAllBtn.addEventListener('click', function() {
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            updateStats();
+            saveProgress();
+        });
+        
+        // Save button
+        saveBtn.addEventListener('click', function() {
+            saveProgress();
+            alert('Progress saved! Your checklist will be restored when you return.');
+        });
+        
+        // Export button
+        exportBtn.addEventListener('click', function() {
+            exportChecklist();
+        });
+        
+        // Reset button
+        resetBtn.addEventListener('click', function() {
+            if (confirm('Are you sure you want to reset all checkboxes?')) {
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                updateStats();
+                localStorage.removeItem('bugHuntingChecklist2025');
+                alert('Checklist reset!');
+            }
+        });
+        
+        // Update stats function
+        function updateStats() {
+            const checkedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            const percentage = Math.round((checkedCount / checkboxes.length) * 100);
+            
+            completedItems.textContent = `Completed: ${checkedCount}`;
+            completionPercentage.textContent = `${percentage}%`;
+            progressBar.style.width = `${percentage}%`;
+        }
+        
+        // Save progress to localStorage
+        function saveProgress() {
+            const progress = {};
+            checkboxes.forEach(checkbox => {
+                progress[checkbox.id] = checkbox.checked;
+            });
+            localStorage.setItem('bugHuntingChecklist2025', JSON.stringify(progress));
+        }
+        
+        // Load progress from localStorage
+        function loadProgress() {
+            const savedProgress = localStorage.getItem('bugHuntingChecklist2025');
+            if (savedProgress) {
+                const progress = JSON.parse(savedProgress);
+                for (const id in progress) {
+                    const checkbox = document.getElementById(id);
+                    if (checkbox) {
+                        checkbox.checked = progress[id];
+                    }
+                }
+            }
+        }
+        
+        // Export checklist function
+        function exportChecklist() {
+            let exportData = "2025 Web Bug Hunting Checklist - Yatun Hassan Rafi (yhrsec)\n\n";
+            
+            // Get all categories
+            const categories = document.querySelectorAll('.category');
+            
+            categories.forEach(category => {
+                const categoryTitle = category.querySelector('h2').textContent;
+                exportData += `=== ${categoryTitle} ===\n`;
+                
+                const items = category.querySelectorAll('.check-item');
+                items.forEach(item => {
+                    const checkbox = item.querySelector('input[type="checkbox"]');
+                    const label = item.querySelector('label');
+                    const status = checkbox.checked ? "[✓]" : "[ ]";
+                    
+                    exportData += `${status} ${label.textContent}\n`;
+                });
+                
+                exportData += "\n";
+            });
+            
+            // Create download
+            const blob = new Blob([exportData], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'bug_hunting_checklist_2025.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    });
+</script>
